@@ -1,0 +1,35 @@
+---
+title: "Super Compute with R and Cuda"
+author: "Bobby Fatemi"
+---
+
+## 
+
+Lower-level languages like C++ are especially suited for highly data- and computation-intensive applications. R programs tend to process large amounts of data, and often have significant independent data and task parallelism. 
+
+R applications can draw tremendous parrallization and compute efficiency using GPU acceleration. This way, R users can benefit from R’s high-level, user-friendly interface while achieving high performance.
+
+This post is derived from the following article posted by NVidia: https://devblogs.nvidia.com/parallelforall/accelerate-r-applications-cuda/
+
+##### Focus on three topics:
+1. **Accelerating R computations using CUDA libraries**
+2. **Calling your own parallel algorithms written in CUDA C/C++ or CUDA Fortran from R**
+3. **Profiling GPU-accelerated R applications using the CUDA Profiler**
+
+While there are R packages to access GPU power within R, an approach that yields more flexibility is *directly accessing GPUs through CUDA libraries or CUDA accelerated languages (C,C++) within R*.
+
+To enable calling CUDA libraries within R, **we need to build an interface to bridge R and the CUDA development layer**, and for productivity, we should encapsulate these interface functions in the R environment.
+
+
+### Accelerating R computations using CUDA libraries
+Using GPU-accelerated libraries reduces development effort and risk, while providing support for many NVIDIA GPU devices with high performance. Thus, CUDA libraries are a quick way to speed up applications, without requiring the R user to understand GPU programming.
+
+#### Writing an Interface Function
+Functions we write with C (CUDA) need to satisfy several properties:
+
+1. C functions called by R need to have a void return type
+2. Results should be returned via function arguments
+3. R passes all arguments to C functions by reference (using pointers), so we must dereference the pointers in C (even scalar input arguments)
+4. Each file containing C functions to be called from R should include:
+    + R.h
+    + Header files for any CUDA libraries used by the function
